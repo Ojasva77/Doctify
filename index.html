@@ -1,0 +1,631 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Doctify - Healthcare at Your Fingertips</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: #f8f9fa;
+            color: #333;
+        }
+        
+        header {
+            background-color: #0077B6;
+            color: white;
+            padding: 1rem;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .logo {
+            font-size: 1.8rem;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+        }
+        
+        .logo-icon {
+            margin-right: 8px;
+        }
+        
+        .nav-links {
+            display: flex;
+            list-style: none;
+        }
+        
+        .nav-links li {
+            margin-left: 1.5rem;
+        }
+        
+        .nav-links a {
+            color: white;
+            text-decoration: none;
+            font-weight: 500;
+        }
+        
+        .hero {
+            background: linear-gradient(135deg, #0077B6, #023E8A);
+            color: white;
+            text-align: center;
+            padding: 5rem 1rem;
+        }
+        
+        .hero-content {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        
+        .hero h1 {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+        }
+        
+        .hero p {
+            font-size: 1.2rem;
+            margin-bottom: 2rem;
+            opacity: 0.9;
+        }
+        
+        .cta-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+        
+        .btn {
+            padding: 0.8rem 1.5rem;
+            border-radius: 50px;
+            font-weight: bold;
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-primary {
+            background-color: white;
+            color: #0077B6;
+        }
+        
+        .btn-secondary {
+            background-color: transparent;
+            color: white;
+            border: 2px solid white;
+        }
+        
+        .features {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 4rem 1rem;
+        }
+        
+        .section-title {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+        
+        .section-title h2 {
+            font-size: 2rem;
+            color: #0077B6;
+            margin-bottom: 1rem;
+        }
+        
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+        }
+        
+        .feature-card {
+            background-color: white;
+            border-radius: 10px;
+            padding: 2rem;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+            text-align: center;
+            transition: transform 0.3s ease;
+        }
+        
+        .feature-card:hover {
+            transform: translateY(-5px);
+        }
+        
+        .feature-icon {
+            font-size: 2.5rem;
+            color: #0077B6;
+            margin-bottom: 1rem;
+        }
+        
+        .feature-card h3 {
+            margin-bottom: 1rem;
+            color: #333;
+        }
+        
+        .doctors {
+            background-color: #e6f3f8;
+            padding: 4rem 1rem;
+        }
+        
+        .doctors-container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .doctors-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+        }
+        
+        .doctor-card {
+            background-color: white;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+        }
+        
+        .doctor-image {
+            height: 200px;
+            background-color: #ddd;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #777;
+            font-size: 5rem;
+        }
+        
+        .doctor-info {
+            padding: 1.5rem;
+        }
+        
+        .doctor-info h3 {
+            margin-bottom: 0.5rem;
+            color: #0077B6;
+        }
+        
+        .doctor-specialty {
+            color: #777;
+            margin-bottom: 1rem;
+        }
+        
+        .doctor-stats {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 1rem;
+        }
+        
+        .stat {
+            display: flex;
+            align-items: center;
+        }
+        
+        .doctor-card .btn {
+            display: block;
+            text-align: center;
+            background-color: #0077B6;
+            color: white;
+        }
+        
+        .testimonials {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 4rem 1rem;
+        }
+        
+        .testimonial-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+        }
+        
+        .testimonial-card {
+            background-color: white;
+            border-radius: 10px;
+            padding: 2rem;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+        }
+        
+        .testimonial-text {
+            font-style: italic;
+            margin-bottom: 1.5rem;
+            color: #555;
+        }
+        
+        .testimonial-author {
+            display: flex;
+            align-items: center;
+        }
+        
+        .author-avatar {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background-color: #ddd;
+            margin-right: 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #777;
+        }
+        
+        .author-info h4 {
+            margin-bottom: 0.25rem;
+        }
+        
+        .download {
+            background: linear-gradient(135deg, #0077B6, #023E8A);
+            color: white;
+            text-align: center;
+            padding: 4rem 1rem;
+        }
+        
+        .download-content {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        
+        .app-badges {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            margin-top: 2rem;
+        }
+        
+        .app-badge {
+            background-color: white;
+            border-radius: 8px;
+            padding: 0.5rem 1rem;
+            display: flex;
+            align-items: center;
+            color: #333;
+            text-decoration: none;
+            font-weight: bold;
+        }
+        
+        .badge-icon {
+            font-size: 1.5rem;
+            margin-right: 0.5rem;
+        }
+        
+        footer {
+            background-color: #333;
+            color: white;
+            padding: 3rem 1rem;
+        }
+        
+        .footer-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 2rem;
+        }
+        
+        .footer-column h3 {
+            margin-bottom: 1.5rem;
+            color: #0077B6;
+        }
+        
+        .footer-links {
+            list-style: none;
+        }
+        
+        .footer-links li {
+            margin-bottom: 0.5rem;
+        }
+        
+        .footer-links a {
+            color: #ddd;
+            text-decoration: none;
+        }
+        
+        .footer-bottom {
+            max-width: 1200px;
+            margin: 2rem auto 0;
+            padding-top: 2rem;
+            border-top: 1px solid #555;
+            text-align: center;
+            font-size: 0.9rem;
+            color: #aaa;
+        }
+        
+        @media (max-width: 768px) {
+            .nav-links {
+                display: none;
+            }
+            
+            .hero h1 {
+                font-size: 2rem;
+            }
+            
+            .cta-buttons {
+                flex-direction: column;
+            }
+        }
+        
+        .hero-image {
+            position: relative;
+            max-width: 600px;
+            margin: 0 auto;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+        }
+        
+        .doctor-hero {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: #f0f8ff;
+            height: 400px;
+            width: 600px;
+            max-width: 100%;
+        }
+        
+        .doctor-hero-image {
+            font-size: 150px;
+            color: #0077B6;
+        }
+        
+        .doctor-hero-content {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: linear-gradient(transparent, rgba(0, 119, 182, 0.8));
+            color: white;
+            padding: 1rem;
+            text-align: left;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <nav>
+            <div class="logo">
+                <span class="logo-icon">➕</span> Doctify
+            </div>
+            <ul class="nav-links">
+                <li><a href="#features">Features</a></li>
+                <li><a href="#doctors">Doctors</a></li>
+                <li><a href="#testimonials">Testimonials</a></li>
+                <li><a href="#download">Download</a></li>
+                <li><a href="#" style="background-color: white; color: #0077B6; padding: 0.5rem 1rem; border-radius: 50px;">Sign In</a></li>
+            </ul>
+        </nav>
+    </header>
+    
+    <section class="hero">
+        <div class="hero-content">
+            <h1>Healthcare at Your Fingertips</h1>
+            <p>Connect with top doctors, get virtual consultations, and manage your health records all in one place.</p>
+            <div class="cta-buttons">
+                <a href="#download" class="btn btn-primary">Download Now</a>
+                <a href="#features" class="btn btn-secondary">Learn More</a>
+            </div>
+            <div class="hero-image">
+                <div class="doctor-hero">
+                    <div class="doctor-hero-image">👨‍⚕️</div>
+                </div>
+                <div class="doctor-hero-content">
+                    <h3>Consult with top medical professionals</h3>
+                    <p>Anytime, anywhere - Your health is our priority</p>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <section class="features" id="features">
+        <div class="section-title">
+            <h2>Why Choose Doctify?</h2>
+            <p>Revolutionizing access to healthcare with technology</p>
+        </div>
+        <div class="feature-grid">
+            <div class="feature-card">
+                <div class="feature-icon">🔍</div>
+                <h3>Find a Doctor</h3>
+                <p>Filter by specialty, location, language, and availability to find the perfect doctor for your needs.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">💬</div>
+                <h3>Virtual Consultations</h3>
+                <p>Secure video, voice, or chat consultations with licensed physicians from the comfort of your home.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">📊</div>
+                <h3>Health Dashboard</h3>
+                <p>Get personalized wellness recommendations and track your health metrics in one place.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">📝</div>
+                <h3>E-Prescriptions & Records</h3>
+                <p>Store your medical records securely and share them easily with healthcare providers.</p>
+            </div>
+        </div>
+    </section>
+    
+    <section class="doctors" id="doctors">
+        <div class="doctors-container">
+            <div class="section-title">
+                <h2>Our Top Doctors</h2>
+                <p>Verified specialists ready to provide quality care</p>
+            </div>
+            <div class="doctors-grid">
+                <div class="doctor-card">
+                    <div class="doctor-image">
+                        <span>👩‍⚕️</span>
+                    </div>
+                    <div class="doctor-info">
+                        <h3>Dr. Deepti</h3>
+                        <p class="doctor-specialty">Dentist, 12 years exp.</p>
+                        <div class="doctor-stats">
+                            <div class="stat">
+                                <span>⭐</span>
+                                <span>4.9 (120 reviews)</span>
+                            </div>
+                            <div class="stat">
+                                <span>🕒</span>
+                                <span>Available today</span>
+                            </div>
+                        </div>
+                        <a href="#" class="btn">Book Consultation</a>
+                    </div>
+                </div>
+                <div class="doctor-card">
+                    <div class="doctor-image">
+                        <span>👨‍⚕️</span>
+                    </div>
+                    <div class="doctor-info">
+                        <h3>Dr. Garg</h3>
+                        <p class="doctor-specialty">General Physician, 15 years exp.</p>
+                        <div class="doctor-stats">
+                            <div class="stat">
+                                <span>⭐</span>
+                                <span>4.8 (215 reviews)</span>
+                            </div>
+                            <div class="stat">
+                                <span>🕒</span>
+                                <span>Next slot: Tomorrow</span>
+                            </div>
+                        </div>
+                        <a href="#" class="btn">Book Consultation</a>
+                    </div>
+                </div>
+                <div class="doctor-card">
+                    <div class="doctor-image">
+                        <span>👨‍⚕️</span>
+                    </div>
+                    <div class="doctor-info">
+                        <h3>Dr. Pandey</h3>
+                        <p class="doctor-specialty">General Physician, 10 years exp.</p>
+                        <div class="doctor-stats">
+                            <div class="stat">
+                                <span>⭐</span>
+                                <span>4.7 (98 reviews)</span>
+                            </div>
+                            <div class="stat">
+                                <span>🕒</span>
+                                <span>Available today</span>
+                            </div>
+                        </div>
+                        <a href="#" class="btn">Book Consultation</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <section class="testimonials" id="testimonials">
+        <div class="section-title">
+            <h2>What Our Users Say</h2>
+            <p>Real experiences from Doctify users</p>
+        </div>
+        <div class="testimonial-grid">
+            <div class="testimonial-card">
+                <p class="testimonial-text">"The virtual consultation saved me so much time! Dr. Garg was thorough and professional. I got my prescription delivered the same day."</p>
+                <div class="testimonial-author">
+                    <div class="author-avatar">T</div>
+                    <div class="author-info">
+                        <h4>Tejas Pandey</h4>
+                        <p>Working Professional</p>
+                    </div>
+                </div>
+            </div>
+            <div class="testimonial-card">
+                <p class="testimonial-text">"Dr. Deepti provided excellent dental advice through the video consultation. She recommended exercises that helped me manage my tooth pain until my in-person appointment."</p>
+                <div class="testimonial-author">
+                    <div class="author-avatar">D</div>
+                    <div class="author-info">
+                        <h4>Deepa Pandey</h4>
+                        <p>Teacher</p>
+                    </div>
+                </div>
+            </div>
+            <div class="testimonial-card">
+                <p class="testimonial-text">"I love how I can store all my family's medical records in one place. Dr. Pandey's follow-up reminders have helped us stay on top of our health!"</p>
+                <div class="testimonial-author">
+                    <div class="author-avatar">R</div>
+                    <div class="author-info">
+                        <h4>Rajeev Pandey</h4>
+                        <p>Father of two</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <section class="download" id="download">
+        <div class="download-content">
+            <h2>Get Started Today</h2>
+            <p>Download the Doctify app and take control of your health journey</p>
+            <div class="app-badges">
+                <a href="#" class="app-badge">
+                    <span class="badge-icon">📱</span>
+                    <span>App Store</span>
+                </a>
+                <a href="#" class="app-badge">
+                    <span class="badge-icon">🤖</span>
+                    <span>Google Play</span>
+                </a>
+            </div>
+        </div>
+    </section>
+    
+    <footer>
+        <div class="footer-content">
+            <div class="footer-column">
+                <h3>Company</h3>
+                <ul class="footer-links">
+                    <li><a href="#">About Us</a></li>
+                    <li><a href="#">Our Team</a></li>
+                    <li><a href="#">Careers</a></li>
+                    <li><a href="#">Press</a></li>
+                </ul>
+            </div>
+            <div class="footer-column">
+                <h3>For Patients</h3>
+                <ul class="footer-links">
+                    <li><a href="#">Find Doctors</a></li>
+                    <li><a href="#">How It Works</a></li>
+                    <li><a href="#">Health Blog</a></li>
+                    <li><a href="#">FAQs</a></li>
+                </ul>
+            </div>
+            <div class="footer-column">
+                <h3>For Doctors</h3>
+                <ul class="footer-links">
+                    <li><a href="#">Join Our Network</a></li>
+                    <li><a href="#">Doctor Resources</a></li>
+                    <li><a href="#">Partner Portal</a></li>
+                </ul>
+            </div>
+            <div class="footer-column">
+                <h3>Contact</h3>
+                <ul class="footer-links">
+                    <li><a href="mailto:workwithtejas@gmail.com">workwithtejas@gmail.com</a></li>
+                    <li><a href="#">+1 (800) DOC-TIFY</a></li>
+                    <li><a href="#">Help Center</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>© 2025 Doctify. All rights reserved. | Privacy Policy | Terms of Service</p>
+        </div>
+    </footer>
+</body>
+</html>
