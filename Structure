@@ -1,0 +1,26 @@
+# Doctify Project Structure
+
+```
+doctify/
+├── client/                  # Mobile app (React Native)
+│   ├── App.js
+│   ├── package.json
+│   ├── assets/              # Images, fonts, etc.
+│   ├── components/          # Reusable UI components
+│   ├── screens/             # App screens
+│   ├── navigation/          # Navigation configuration
+│   ├── services/            # API calls, authentication
+│   └── utils/               # Helper functions
+│
+├── server/                  # Backend (Node.js)
+│   ├── package.json
+│   ├── server.js            # Entry point
+│   ├── config/              # Environment variables, configs
+│   ├── controllers/         # Request handlers
+│   ├── models/              # Database models
+│   ├── routes/              # API routes
+│   ├── middleware/          # Custom middleware
+│   └── utils/               # Helper functions
+│
+└── README.md                # Project documentation
+```
