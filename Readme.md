@@ -148,8 +148,8 @@ Contributions are welcome! Please feel free to submit a Pull Request.
 
 ## 📞 Contact
 
-If you have any questions or feedback, please reach out to [your-email@example.com](mailto:your-email@example.com).
+If you have any questions or feedback, please reach out to email
 
 ---
 
-Made with ❤️ by [Your Name]
+Made by Ojasva
