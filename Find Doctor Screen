@@ -1,0 +1,234 @@
+// screens/FindDoctorScreen.js
+import React, { useState, useEffect } from 'react';
+import { 
+  View, 
+  Text, 
+  StyleSheet, 
+  FlatList, 
+  TextInput, 
+  TouchableOpacity,
+  ActivityIndicator
+} from 'react-native';
+import Ionicons from 'react-native-vector-icons/Ionicons';
+import axios from 'axios';
+import { API_URL } from '../config/constants';
+import DoctorCard from '../components/DoctorCard';
+
+const FindDoctorScreen = ({ navigation }) => {
+  const [searchQuery, setSearchQuery] = useState('');
+  const [doctors, setDoctors] = useState([]);
+  const [filteredDoctors, setFilteredDoctors] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [specialties, setSpecialties] = useState([]);
+  const [selectedSpecialty, setSelectedSpecialty] = useState(null);
+
+  // Fetch doctors
+  useEffect(() => {
+    const fetchDoctors = async () => {
+      try {
+        setLoading(true);
+        const response = await axios.get(`${API_URL}/doctors`);
+        setDoctors(response.data);
+        setFilteredDoctors(response.data);
+        
+        // Extract unique specialties
+        const specialtiesSet = new Set(response.data.map(doc => doc.specialty));
+        setSpecialties(Array.from(specialtiesSet));
+        
+        setLoading(false);
+      } catch (error) {
+        console.error('Error fetching doctors:', error);
+        setLoading(false);
+      }
+    };
+
+    fetchDoctors();
+  }, []);
+
+  // Filter doctors based on search query and selected specialty
+  useEffect(() => {
+    let filtered = doctors;
+    
+    if (searchQuery) {
+      filtered = filtered.filter(
+        doctor => 
+          doctor.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+          doctor.specialty.toLowerCase().includes(searchQuery.toLowerCase())
+      );
+    }
+    
+    if (selectedSpecialty) {
+      filtered = filtered.filter(doctor => doctor.specialty === selectedSpecialty);
+    }
+    
+    setFilteredDoctors(filtered);
+  }, [searchQuery, selectedSpecialty, doctors]);
+
+  return (
+    <View style={styles.container}>
+      {/* Search Bar */}
+      <View style={styles.searchContainer}>
+        <Ionicons name="search" size={20} color="#666" style={styles.searchIcon} />
+        <TextInput
+          style={styles.searchInput}
+          placeholder="Search doctors by name or specialty"
+          value={searchQuery}
+          onChangeText={setSearchQuery}
+        />
+      </View>
+      
+      {/* Specialty Filter */}
+      <View style={styles.specialtyContainer}>
+        <ScrollView horizontal showsHorizontalScrollIndicator={false}>
+          <TouchableOpacity
+            style={[
+              styles.specialtyChip,
+              !selectedSpecialty && styles.specialtyChipSelected
+            ]}
+            onPress={() => setSelectedSpecialty(null)}
+          >
+            <Text style={!selectedSpecialty ? styles.specialtyTextSelected : styles.specialtyText}>
+              All
+            </Text>
+          </TouchableOpacity>
+          
+          {specialties.map(specialty => (
+            <TouchableOpacity
+              key={specialty}
+              style={[
+                styles.specialtyChip,
+                selectedSpecialty === specialty && styles.specialtyChipSelected
+              ]}
+              onPress={() => setSelectedSpecialty(specialty)}
+            >
+              <Text 
+                style={
+                  selectedSpecialty === specialty 
+                    ? styles.specialtyTextSelected 
+                    : styles.specialtyText
+                }
+              >
+                {specialty}
+              </Text>
+            </TouchableOpacity>
+          ))}
+        </ScrollView>
+      </View>
+
+      {/* Doctors List */}
+      {loading ? (
+        <ActivityIndicator size="large" color="#4285F4" style={styles.loader} />
+      ) : (
+        <>
+          <Text style={styles.resultCount}>
+            {filteredDoctors.length} doctor{filteredDoctors.length !== 1 ? 's' : ''} found
+          </Text>
+          
+          <FlatList
+            data={filteredDoctors}
+            keyExtractor={item => item.id.toString()}
+            renderItem={({ item }) => (
+              <DoctorCard
+                doctor={item}
+                onPress={() => navigation.navigate('DoctorDetails', { doctorId: item.id })}
+              />
+            )}
+            showsVerticalScrollIndicator={false}
+            contentContainerStyle={styles.listContainer}
+            ListEmptyComponent={
+              <View style={styles.emptyContainer}>
+                <Ionicons name="search-outline" size={64} color="#ccc" />
+                <Text style={styles.emptyText}>No doctors found</Text>
+                <Text style={styles.emptySubText}>
+                  Try adjusting your search or filters
+                </Text>
+              </View>
+            }
+          />
+        </>
+      )}
+    </View>
+  );
+};
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: '#f9f9f9',
+    padding: 16,
+  },
+  searchContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#fff',
+    borderRadius: 10,
+    paddingHorizontal: 12,
+    marginBottom: 16,
+    elevation: 2,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.1,
+    shadowRadius: 1,
+  },
+  searchIcon: {
+    marginRight: 8,
+  },
+  searchInput: {
+    flex: 1,
+    height: 50,
+    fontSize: 16,
+  },
+  specialtyContainer: {
+    marginBottom: 16,
+  },
+  specialtyChip: {
+    paddingVertical: 8,
+    paddingHorizontal: 16,
+    borderRadius: 20,
+    backgroundColor: '#fff',
+    marginRight: 8,
+    elevation: 1,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.1,
+    shadowRadius: 1,
+  },
+  specialtyChipSelected: {
+    backgroundColor: '#4285F4',
+  },
+  specialtyText: {
+    color: '#666',
+  },
+  specialtyTextSelected: {
+    color: '#fff',
+    fontWeight: '500',
+  },
+  resultCount: {
+    fontSize: 14,
+    color: '#666',
+    marginBottom: 8,
+  },
+  listContainer: {
+    paddingBottom: 16,
+  },
+  emptyContainer: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: 50,
+  },
+  emptyText: {
+    fontSize: 18,
+    color: '#666',
+    marginTop: 16,
+  },
+  emptySubText: {
+    fontSize: 14,
+    color: '#999',
+    marginTop: 8,
+  },
+  loader: {
+    marginTop: 50,
+  },
+});
+
+export default FindDoctorScreen;
