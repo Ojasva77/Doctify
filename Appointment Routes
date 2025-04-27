@@ -1,0 +1,178 @@
+// routes/appointmentRoutes.js
+const express = require('express');
+const router = express.Router();
+const Appointment = require('../models/Appointment');
+const Doctor = require('../models/Doctor');
+const auth = require('../middleware/auth');
+const { check, validationResult } = require('express-validator');
+
+// Get all appointments for the logged-in user (patient or doctor)
+router.get('/my-appointments', auth, async (req, res) => {
+  try {
+    let appointments;
+    
+    if (req.user.role === 'patient') {
+      // Get appointments where the user is the patient
+      appointments = await Appointment.find({ patient: req.user.id })
+        .populate('doctor', ['specialty', 'consultationFee'])
+        .populate({
+          path: 'doctor',
+          populate: {
+            path: 'user',
+            select: 'name profilePicture'
+          }
+        })
+        .sort({ appointmentDate: -1 });
+    } else if (req.user.role === 'doctor') {
+      // Get the doctor ID for this user
+      const doctor = await Doctor.findOne({ user: req.user.id });
+      
+      if (!doctor) {
+        return res.status(404).json({ message: 'Doctor profile not found' });
+      }
+      
+      // Get appointments where the user is the doctor
+      appointments = await Appointment.find({ doctor: doctor._id })
+        .populate('patient', ['name', 'profilePicture', 'gender', 'dateOfBirth'])
+        .sort({ appointmentDate: -1 });
+    }
+    
+    res.json(appointments);
+  } catch (err) {
+    console.error(err.message);
+    res.status(500).send('Server error');
+  }
+});
+
+// Book a new appointment
+router.post(
+  '/',
+  [
+    auth,
+    [
+      check('doctor', 'Doctor ID is required').not().isEmpty(),
+      check('appointmentDate', 'Appointment date is required').not().isEmpty(),
+      check('timeSlot', 'Time slot is required').not().isEmpty(),
+      check('type', 'Appointment type is required').not().isEmpty(),
+      check('reason', 'Reason for appointment is required').not().isEmpty()
+    ]
+  ],
+  async (req, res) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ errors: errors.array() });
+    }
+    
+    const {
+      doctor: doctorId,
+      appointmentDate,
+      timeSlot,
+      type,
+      reason,
+      symptoms
+    } = req.body;
+    
+    try {
+      // Verify the doctor exists
+      const doctor = await Doctor.findById(doctorId);
+      
+      if (!doctor) {
+        return res.status(404).json({ message: 'Doctor not found' });
+      }
+      
+      // Create new appointment
+      const appointment = new Appointment({
+        patient: req.user.id,
+        doctor: doctorId,
+        appointmentDate,
+        timeSlot,
+        type,
+        reason,
+        symptoms: symptoms || [],
+        paymentAmount: doctor.consultationFee
+      });
+      
+      await appointment.save();
+      
+      res.json(appointment);
+    } catch (err) {
+      console.error(err.message);
+      res.status(500).send('Server error');
+    }
+  }
+);
+
+// Update appointment status (for doctors/admins)
+router.put('/:id/status', auth, async (req, res) => {
+  try {
+    const appointment = await Appointment.findById(req.params.id);
+    
+    if (!appointment) {
+      return res.status(404).json({ message: 'Appointment not found' });
+    }
+    
+    // Check if user is allowed to update (doctor assigned to appointment or admin)
+    const doctor = await Doctor.findById(appointment.doctor);
+    
+    if (!doctor) {
+      return res.status(404).json({ message: 'Doctor not found' });
+    }
+    
+    if (doctor.user.toString() !== req.user.id && req.user.role !== 'admin') {
+      return res.status(401).json({ message: 'Not authorized' });
+    }
+    
+    // Update status
+    appointment.status = req.body.status;
+    
+    // If appointment is confirmed, generate a meeting link for virtual appointments
+    if (req.body.status === 'confirmed' && 
+        (appointment.type === 'video' || appointment.type === 'voice')) {
+      appointment.meetingLink = `https://doctify.com/meet/${appointment._id}`;
+    }
+    
+    await appointment.save();
+    
+    res.json(appointment);
+  } catch (err) {
+    console.error(err.message);
+    res.status(500).send('Server error');
+  }
+});
+
+// Add prescription to appointment (doctors only)
+router.put('/:id/prescription', auth, async (req, res) => {
+  try {
+    const appointment = await Appointment.findById(req.params.id);
+    
+    if (!appointment) {
+      return res.status(404).json({ message: 'Appointment not found' });
+    }
+    
+    // Check if user is the doctor for this appointment
+    const doctor = await Doctor.findById(appointment.doctor);
+    
+    if (!doctor) {
+      return res.status(404).json({ message: 'Doctor not found' });
+    }
+    
+    if (doctor.user.toString() !== req.user.id) {
+      return res.status(401).json({ message: 'Not authorized' });
+    }
+    
+    // Add prescription
+    appointment.prescription = req.body.prescription;
+    
+    // Mark appointment as completed
+    appointment.status = 'completed';
+    
+    await appointment.save();
+    
+    res.json(appointment);
+  } catch (err) {
+    console.error(err.message);
+    res.status(500).send('Server error');
+  }
+});
+
+module.exports = router;
