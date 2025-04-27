@@ -1,0 +1,164 @@
+// routes/doctorRoutes.js
+const express = require('express');
+const router = express.Router();
+const Doctor = require('../models/Doctor');
+const User = require('../models/User');
+const auth = require('../middleware/auth');
+const { check, validationResult } = require('express-validator');
+
+// Get all doctors
+router.get('/', async (req, res) => {
+  try {
+    // Find all doctors and populate with basic user info
+    const doctors = await Doctor.find()
+      .populate('user', ['name', 'email', 'profilePicture'])
+      .sort({ rating: -1 });
+
+    // Format response
+    const formattedDoctors = doctors.map(doctor => ({
+      id: doctor._id,
+      name: doctor.user.name,
+      imageUrl: doctor.user.profilePicture,
+      specialty: doctor.specialty,
+      rating: doctor.rating,
+      reviewCount: doctor.reviewCount,
+      location: doctor.clinicAddress ? 
+        `${doctor.clinicAddress.city}, ${doctor.clinicAddress.country}` : 'Remote',
+      consultationFee: doctor.consultationFee,
+      isAvailable: doctor.isAvailable,
+      experience: doctor.experience
+    }));
+
+    res.json(formattedDoctors);
+  } catch (err) {
+    console.error(err.message);
+    res.status(500).send('Server error');
+  }
+});
+
+// Get doctor by ID
+router.get('/:id', async (req, res) => {
+  try {
+    const doctor = await Doctor.findById(req.params.id)
+      .populate('user', ['name', 'email', 'profilePicture', 'phone']);
+    
+    if (!doctor) {
+      return res.status(404).json({ message: 'Doctor not found' });
+    }
+    
+    res.json(doctor);
+  } catch (err) {
+    console.error(err.message);
+    
+    if (err.kind === 'ObjectId') {
+      return res.status(404).json({ message: 'Doctor not found' });
+    }
+    
+    res.status(500).send('Server error');
+  }
+});
+
+// Update doctor profile (protected route)
+router.put('/:id', auth, async (req, res) => {
+  try {
+    const doctor = await Doctor.findById(req.params.id);
+    
+    if (!doctor) {
+      return res.status(404).json({ message: 'Doctor not found' });
+    }
+    
+    // Check if the user is the doctor or an admin
+    if (doctor.user.toString() !== req.user.id && req.user.role !== 'admin') {
+      return res.status(401).json({ message: 'Not authorized' });
+    }
+    
+    // Update fields
+    const {
+      specialty,
+      subSpecialty,
+      qualifications,
+      experience,
+      consultationFee,
+      clinicAddress,
+      availableSlots,
+      languages,
+      isAvailable
+    } = req.body;
+    
+    // Update doctor fields if provided
+    if (specialty) doctor.specialty = specialty;
+    if (subSpecialty) doctor.subSpecialty = subSpecialty;
+    if (qualifications) doctor.qualifications = qualifications;
+    if (experience) doctor.experience = experience;
+    if (consultationFee) doctor.consultationFee = consultationFee;
+    if (clinicAddress) doctor.clinicAddress = clinicAddress;
+    if (availableSlots) doctor.availableSlots = availableSlots;
+    if (languages) doctor.languages = languages;
+    if (isAvailable !== undefined) doctor.isAvailable = isAvailable;
+    
+    await doctor.save();
+    
+    res.json(doctor);
+  } catch (err) {
+    console.error(err.message);
+    res.status(500).send('Server error');
+  }
+});
+
+// Add a review for a doctor
+router.post(
+  '/:id/reviews',
+  [
+    auth,
+    [
+      check('rating', 'Rating is required and must be between 1 and 5').isInt({ min: 1, max: 5 }),
+      check('comment', 'Comment is required').not().isEmpty()
+    ]
+  ],
+  async (req, res) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ errors: errors.array() });
+    }
+    
+    try {
+      const doctor = await Doctor.findById(req.params.id);
+      
+      if (!doctor) {
+        return res.status(404).json({ message: 'Doctor not found' });
+      }
+      
+      const { rating, comment } = req.body;
+      
+      // Check if user has already reviewed this doctor
+      const existingReview = doctor.reviews.find(
+        review => review.user.toString() === req.user.id
+      );
+      
+      if (existingReview) {
+        return res.status(400).json({ message: 'You have already reviewed this doctor' });
+      }
+      
+      // Add review
+      doctor.reviews.unshift({
+        user: req.user.id,
+        rating,
+        comment
+      });
+      
+      // Update doctor rating
+      const totalRating = doctor.reviews.reduce((sum, review) => sum + review.rating, 0);
+      doctor.rating = totalRating / doctor.reviews.length;
+      doctor.reviewCount = doctor.reviews.length;
+      
+      await doctor.save();
+      
+      res.json(doctor.reviews);
+    } catch (err) {
+      console.error(err.message);
+      res.status(500).send('Server error');
+    }
+  }
+);
+
+module.exports = router;
