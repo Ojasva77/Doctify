@@ -1,0 +1,104 @@
+// navigation/MainNavigator.js
+import React, { useContext } from 'react';
+import { createStackNavigator } from '@react-navigation/stack';
+import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import Ionicons from 'react-native-vector-icons/Ionicons';
+
+// Auth Screens
+import LoginScreen from '../screens/auth/LoginScreen';
+import RegisterScreen from '../screens/auth/RegisterScreen';
+
+// Main App Screens
+import HomeScreen from '../screens/HomeScreen';
+import FindDoctorScreen from '../screens/FindDoctorScreen';
+import ConsultationScreen from '../screens/ConsultationScreen';
+import HealthDashboardScreen from '../screens/HealthDashboardScreen';
+import ProfileScreen from '../screens/ProfileScreen';
+import DoctorDetailsScreen from '../screens/DoctorDetailsScreen';
+import BookAppointmentScreen from '../screens/BookAppointmentScreen';
+
+import { AuthContext } from '../context/AuthContext';
+
+const Stack = createStackNavigator();
+const Tab = createBottomTabNavigator();
+
+const MainTabs = () => {
+  return (
+    <Tab.Navigator
+      screenOptions={({ route }) => ({
+        tabBarIcon: ({ focused, color, size }) => {
+          let iconName;
+          switch (route.name) {
+            case 'Home':
+              iconName = focused ? 'home' : 'home-outline';
+              break;
+            case 'Find Doctor':
+              iconName = focused ? 'search' : 'search-outline';
+              break;
+            case 'Consultation':
+              iconName = focused ? 'videocam' : 'videocam-outline';
+              break;
+            case 'Health':
+              iconName = focused ? 'heart' : 'heart-outline';
+              break;
+            case 'Profile':
+              iconName = focused ? 'person' : 'person-outline';
+              break;
+          }
+          return <Ionicons name={iconName} size={size} color={color} />;
+        },
+        tabBarActiveTintColor: '#4285F4',
+        tabBarInactiveTintColor: 'gray',
+      })}
+    >
+      <Tab.Screen name="Home" component={HomeScreen} />
+      <Tab.Screen name="Find Doctor" component={FindDoctorScreen} />
+      <Tab.Screen name="Consultation" component={ConsultationScreen} />
+      <Tab.Screen name="Health" component={HealthDashboardScreen} />
+      <Tab.Screen name="Profile" component={ProfileScreen} />
+    </Tab.Navigator>
+  );
+};
+
+const MainNavigator = () => {
+  const { userToken } = useContext(AuthContext);
+
+  return (
+    <Stack.Navigator>
+      {userToken ? (
+        <>
+          <Stack.Screen 
+            name="MainApp" 
+            component={MainTabs} 
+            options={{ headerShown: false }} 
+          />
+          <Stack.Screen 
+            name="DoctorDetails" 
+            component={DoctorDetailsScreen} 
+            options={{ title: 'Doctor Profile' }} 
+          />
+          <Stack.Screen 
+            name="BookAppointment" 
+            component={BookAppointmentScreen} 
+            options={{ title: 'Book Appointment' }} 
+          />
+        </>
+      ) : (
+        <>
+          <Stack.Screen 
+            name="Login" 
+            component={LoginScreen} 
+            options={{ headerShown: false }} 
+          />
+          <Stack.Screen 
+            name="Register" 
+            component={RegisterScreen} 
+            options={{ title: 'Create Account' }} 
+          />
+        </>
+      )}
+    </Stack.Navigator>
+  );
+};
+
+export default MainNavigator;
