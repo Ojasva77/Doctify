@@ -1,0 +1,175 @@
+# Initialize a new git repository
+mkdir doctify
+cd doctify
+
+# Create repository structure
+mkdir -p client server
+
+# Initialize git
+git init
+
+# Create a .gitignore file
+cat > .gitignore << EOL
+# Dependencies
+node_modules/
+/.pnp
+.pnp.js
+
+# Testing
+/coverage
+
+# Production
+/build
+/dist
+
+# Environment variables
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Editor directories and files
+.idea/
+.vscode/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# OS files
+.DS_Store
+
+# React Native specific
+android/app/build/
+ios/Pods/
+ios/build/
+*.keystore
+*.hprof
+EOL
+
+# Create README.md
+cat > README.md << EOL
+# Doctify - Healthcare App
+
+Doctify is a modern healthcare platform that connects patients with healthcare providers through virtual consultations, doctor discovery, and AI-powered health insights.
+
+## Features
+
+- 🔍 Find a Doctor – Filter by specialty, location, language, and availability
+- 💬 Virtual Consultations – Secure video/voice/chat with licensed physicians
+- 📊 Health Dashboard – Personalized wellness recommendations
+- 📝 E-Prescriptions & Medical Records – Stored securely and shared easily
+
+## Tech Stack
+
+- **Frontend**: React Native (iOS & Android)
+- **Backend**: Node.js, Express.js
+- **Database**: MongoDB
+- **Authentication**: JWT
+- **API Documentation**: Swagger
+
+## Installation
+
+### Prerequisites
+- Node.js (v14+)
+- npm or yarn
+- MongoDB
+
+### Setup Instructions
+
+1. Clone the repository
+\`\`\`bash
+git clone https://github.com/yourusername/doctify.git
+cd doctify
+\`\`\`
+
+2. Install backend dependencies
+\`\`\`bash
+cd server
+npm install
+\`\`\`
+
+3. Set up environment variables
+   - Create a \`.env\` file in the server directory
+   - Add the following variables:
+   \`\`\`
+   PORT=5000
+   MONGODB_URI=mongodb://localhost:27017/doctify
+   JWT_SECRET=your_jwt_secret_key_here
+   JWT_EXPIRES_IN=7d
+   NODE_ENV=development
+   \`\`\`
+
+4. Start the backend server
+\`\`\`bash
+npm run dev
+\`\`\`
+
+5. Install frontend dependencies
+\`\`\`bash
+cd ../client
+npm install
+\`\`\`
+
+6. Start the React Native development server
+\`\`\`bash
+npx react-native start
+\`\`\`
+
+7. Run the app on Android or iOS
+\`\`\`bash
+# For Android
+npx react-native run-android
+
+# For iOS
+npx react-native run-ios
+\`\`\`
+
+## API Endpoints
+
+### Authentication
+- POST /api/auth/register - Register a new user
+- POST /api/auth/login - Login user
+
+### Doctors
+- GET /api/doctors - Get all doctors
+- GET /api/doctors/:id - Get doctor by ID
+- PUT /api/doctors/:id - Update doctor profile
+- POST /api/doctors/:id/reviews - Add a review for a doctor
+
+### Appointments
+- GET /api/appointments/my-appointments - Get user's appointments
+- POST /api/appointments - Book a new appointment
+- PUT /api/appointments/:id/status - Update appointment status
+- PUT /api/appointments/:id/prescription - Add prescription to appointment
+
+## Contributing
+
+1. Fork the repository
+2. Create your feature branch (\`git checkout -b feature/amazing-feature\`)
+3. Commit your changes (\`git commit -m 'Add some amazing feature'\`)
+4. Push to the branch (\`git push origin feature/amazing-feature\`)
+5. Open a Pull Request
+
+## License
+
+This project is licensed under the MIT License - see the LICENSE file for details.
+EOL
+
+# Add all files to git
+git add .
+git commit -m "Initial commit: Project structure and documentation"
+
+# Now you're ready to push to GitHub
+# First, create a repository on GitHub
+# Then, run these commands (replace with your repository URL):
+# git remote add origin https://github.com/yourusername/doctify.git
+# git branch -M main
+# git push -u origin main
