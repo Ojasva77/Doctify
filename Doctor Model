@@ -1,0 +1,87 @@
+// models/Doctor.js
+const mongoose = require('mongoose');
+
+const doctorSchema = new mongoose.Schema({
+  user: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User',
+    required: true
+  },
+  specialty: {
+    type: String,
+    required: true
+  },
+  subSpecialty: {
+    type: String
+  },
+  qualifications: [{
+    degree: String,
+    institution: String,
+    year: Number
+  }],
+  experience: {
+    type: Number, // in years
+    default: 0
+  },
+  licenseNumber: {
+    type: String,
+    required: true
+  },
+  clinicAddress: {
+    name: String,
+    street: String,
+    city: String,
+    state: String,
+    zipCode: String,
+    country: String
+  },
+  consultationFee: {
+    type: Number,
+    required: true
+  },
+  isAvailable: {
+    type: Boolean,
+    default: true
+  },
+  availableSlots: [{
+    day: {
+      type: String,
+      enum: ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday']
+    },
+    slots: [{
+      startTime: String,
+      endTime: String
+    }]
+  }],
+  rating: {
+    type: Number,
+    default: 0
+  },
+  reviewCount: {
+    type: Number,
+    default: 0
+  },
+  reviews: [{
+    user: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'User'
+    },
+    rating: Number,
+    comment: String,
+    date: {
+      type: Date,
+      default: Date.now
+    }
+  }],
+  languages: [{
+    type: String
+  }],
+  verified: {
+    type: Boolean,
+    default: false
+  }
+}, { timestamps: true });
+
+const Doctor = mongoose.model('Doctor', doctorSchema);
+
+module.exports = Doctor;
