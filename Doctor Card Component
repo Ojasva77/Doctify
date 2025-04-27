@@ -1,0 +1,139 @@
+// components/DoctorCard.js
+import React from 'react';
+import { View, Text, StyleSheet, Image, TouchableOpacity } from 'react-native';
+import Ionicons from 'react-native-vector-icons/Ionicons';
+
+const DoctorCard = ({ doctor, onPress }) => {
+  return (
+    <TouchableOpacity style={styles.card} onPress={onPress}>
+      <Image
+        source={{ uri: doctor.imageUrl || 'https://via.placeholder.com/100' }}
+        style={styles.avatar}
+      />
+      <View style={styles.infoContainer}>
+        <Text style={styles.name}>Dr. {doctor.name}</Text>
+        <Text style={styles.specialty}>{doctor.specialty}</Text>
+        
+        <View style={styles.ratingContainer}>
+          <Ionicons name="star" size={14} color="#FFC107" />
+          <Text style={styles.rating}>{doctor.rating} ({doctor.reviewCount})</Text>
+        </View>
+        
+        <View style={styles.detailsContainer}>
+          <View style={styles.detailItem}>
+            <Ionicons name="location-outline" size={14} color="#666" />
+            <Text style={styles.detailText}>{doctor.location}</Text>
+          </View>
+          <View style={styles.detailItem}>
+            <Ionicons name="cash-outline" size={14} color="#666" />
+            <Text style={styles.detailText}>${doctor.consultationFee}</Text>
+          </View>
+        </View>
+      </View>
+      
+      <View style={styles.availabilityContainer}>
+        <Text 
+          style={[
+            styles.availabilityLabel,
+            doctor.isAvailable ? styles.availableLabel : styles.unavailableLabel
+          ]}
+        >
+          {doctor.isAvailable ? 'Available' : 'Busy'}
+        </Text>
+        <TouchableOpacity style={styles.bookButton}>
+          <Text style={styles.bookButtonText}>Book</Text>
+        </TouchableOpacity>
+      </View>
+    </TouchableOpacity>
+  );
+};
+
+const styles = StyleSheet.create({
+  card: {
+    flexDirection: 'row',
+    backgroundColor: '#fff',
+    borderRadius: 12,
+    padding: 16,
+    marginBottom: 12,
+    elevation: 2,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.1,
+    shadowRadius: 2,
+  },
+  avatar: {
+    width: 70,
+    height: 70,
+    borderRadius: 35,
+    marginRight: 16,
+  },
+  infoContainer: {
+    flex: 1,
+  },
+  name: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: '#333',
+    marginBottom: 2,
+  },
+  specialty: {
+    fontSize: 14,
+    color: '#666',
+    marginBottom: 4,
+  },
+  ratingContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 6,
+  },
+  rating: {
+    fontSize: 12,
+    color: '#666',
+    marginLeft: 4,
+  },
+  detailsContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+  },
+  detailItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  detailText: {
+    fontSize: 12,
+    color: '#666',
+    marginLeft: 4,
+  },
+  availabilityContainer: {
+    justifyContent: 'space-between',
+    alignItems: 'flex-end',
+  },
+  availabilityLabel: {
+    fontSize: 12,
+    paddingVertical: 2,
+    paddingHorizontal: 8,
+    borderRadius: 10,
+    marginBottom: 12,
+  },
+  availableLabel: {
+    backgroundColor: '#E6F4EA',
+    color: '#34A853',
+  },
+  unavailableLabel: {
+    backgroundColor: '#FEEAE6',
+    color: '#EA4335',
+  },
+  bookButton: {
+    backgroundColor: '#4285F4',
+    paddingVertical: 6,
+    paddingHorizontal: 12,
+    borderRadius: 6,
+  },
+  bookButtonText: {
+    color: '#fff',
+    fontSize: 12,
+    fontWeight: '500',
+  },
+});
+
+export default DoctorCard;
